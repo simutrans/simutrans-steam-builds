@@ -1,0 +1,56 @@
+name: Nightly Build Windows 64
+
+on: [push]
+
+jobs:
+  build:
+   runs-on: windows-latest
+   steps:
+    - name: Setup MSBuild and add to PATH
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Checkout code
+      uses: actions/checkout@v4
+      id: checkout_code
+
+    - name: Make NSIS
+      shell: pwsh
+      run: |
+        $REVISION = cat revision.txt
+        svn checkout svn://servers.simutrans.org/simutrans/trunk . -r $REVISION
+        ./.github/prepare-nsis.ps1
+
+    - name: Build dependencies
+      shell: pwsh
+      run: |
+        rm vcpkg.json
+        git clone https://github.com/Microsoft/vcpkg.git
+        cd vcpkg
+        ./bootstrap-vcpkg.bat
+        ./vcpkg --triplet x64-windows install zlib bzip2 libpng zstd sdl2 freetype miniupnpc fluidsynth --cmake-args=-DVCPKG_BUILD_TYPE=release
+
+    - name: Build Simutrans
+      shell: pwsh
+      run: |
+        $REVISION = cat revision.txt
+        cmake.exe -S . -B build -G "Visual Studio 17 2022" -A x64 -DCMAKE_TOOLCHAIN_FILE="vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET="x64-windows" -DSIMUTRANS_STEAM_BUILT=ON -DSIMUTRANS_USE_FLUIDSYNTH_MIDI=ON -DSIMUTRANS_USE_REVISION="$REVISION"
+        cmake.exe --build build --target install --config Release
+
+    - name: Build zipfile
+      shell: pwsh
+      run: |
+        cd build
+        mkdir 434522
+        Move-Item -Path simutrans\*.exe -Destination 434522
+        Move-Item -Path simutrans\*.dll -Destination 434522
+        cd 434522
+        Compress-Archive -Path *.* -DestinationPath "windows64-434522.zip"
+
+    - name: Update windows 64 depot
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: build/434522/windows64-434522.zip
+        asset_name: 434522.zip
+        tag: Nightly
+        overwrite: true
