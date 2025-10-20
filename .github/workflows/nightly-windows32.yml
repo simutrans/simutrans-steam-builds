@@ -9,11 +9,6 @@ jobs:
     - name: Setup MSBuild and add to PATH
       uses: microsoft/setup-msbuild@v2
 
-    - name: Install subversion
-      shell: pwsh
-      run: |
-        ECHO 'Y' | winget install --id=Slik.Subversion -e
-
     - name: Checkout code
       uses: actions/checkout@v4
       id: checkout_code
@@ -21,6 +16,7 @@ jobs:
     - name: Make NSIS
       shell: pwsh
       run: |
+        ECHO 'Y' | winget install --id=Slik.Subversion -e
         $REVISION = cat revision.txt
         svn checkout svn://servers.simutrans.org/simutrans/trunk . -r $REVISION
         ./.github/prepare-nsis.ps1
