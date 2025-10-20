@@ -21,6 +21,7 @@ jobs:
     - name: Make NSIS
       shell: pwsh
       run: |
+        refreshenv
         $REVISION = cat revision.txt
         svn checkout svn://servers.simutrans.org/simutrans/trunk . -r $REVISION
         ./.github/prepare-nsis.ps1
