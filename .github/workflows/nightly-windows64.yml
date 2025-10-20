@@ -12,7 +12,7 @@ jobs:
     - name: Install subversion
       shell: pwsh
       run: |
-        winget install -e --id TortoiseSVN.TortoiseSVN
+        ECHO 'Y' |winget install -e --id TortoiseSVN.TortoiseSVN
 
     - name: Checkout code
       uses: actions/checkout@v4
