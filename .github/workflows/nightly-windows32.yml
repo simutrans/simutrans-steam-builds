@@ -9,6 +9,11 @@ jobs:
     - name: Setup MSBuild and add to PATH
       uses: microsoft/setup-msbuild@v2
 
+    - name: Install subversion
+      shell: pwsh
+      run: |
+        winget install -e --id TortoiseSVN.TortoiseSVN
+
     - name: Checkout code
       uses: actions/checkout@v4
       id: checkout_code
