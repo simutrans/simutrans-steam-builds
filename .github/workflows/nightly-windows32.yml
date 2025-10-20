@@ -16,7 +16,7 @@ jobs:
     - name: Make NSIS
       shell: pwsh
       run: |
-        ECHO 'Y' | winget install --id=TortoiseSVN.TortoiseSVN -e
+        ECHO 'Y' | choco install svn
         $REVISION = cat revision.txt
         svn checkout svn://servers.simutrans.org/simutrans/trunk . -r $REVISION
         ./.github/prepare-nsis.ps1
