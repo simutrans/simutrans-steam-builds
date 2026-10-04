@@ -27,7 +27,7 @@ jobs:
         git clone https://github.com/Microsoft/vcpkg.git
         cd vcpkg
         ./bootstrap-vcpkg.bat
-        ./vcpkg --triplet x86-windows install zlib bzip2 libpng zstd sdl2 freetype miniupnpc fluidsynth --cmake-args=-DVCPKG_BUILD_TYPE=release
+        ./vcpkg --triplet x86-windows install zlib bzip2 libpng zstd sdl2 freetype miniupnpc "fluidsynth[sndfile]" --cmake-args=-DVCPKG_BUILD_TYPE=release
 
     - name: Build Simutrans
       shell: pwsh
